@@ -10,12 +10,6 @@ function randomizeCategory(){
     return randomCategory
 }
 
-function randomizeClue(clues){
-    let numOfClues = clues.length
-    randomClue = Math.floor(Math.random()*numOfClues)
-    return randomClue
-}
-
 function appendClue(clue){
     let div = document.createElement('div')
     div.classList.add('cluePresentation')
@@ -27,28 +21,39 @@ function appendClue(clue){
     let h3 = document.createElement("h3")
     h3.innerHTML = clue.question
     document.querySelector('.cluePresentation').replaceChildren(h3)
+    document.querySelector('.cluePresentation').append(createForm())
+    let submitButton = document.getElementById("submitAnswer")
+    submitButton.addEventListener("click", validateAnswer)
 }
 
 function presentClue(event){
     let classStr = this.className
-    this.innerHTML = ""
-    fetch(`https://jservice.kenzie.academy/api/clues?value=${this.innerHTML.slice(1)}&category=${classStr.slice(1)}`)
-    .then(res=>res.json())
-    .then(res=>{
-        answer = res['clues'][0]['answer']
-        appendClue(res['clues'][0])
-    })// fetch clues then append clue to present
+    //this.innerHTML = ""
     if((fetch(`https://jservice.kenzie.academy/api/clues?value=${this.innerHTML.slice(1)}&category=${classStr.slice(1)}`)
     .then(res=>res.json())
     .then(res=>res['clues'][0]['question'])
     )===undefined){//some  games have double values so check if clue returns underfined
         fetch(`https://jservice.kenzie.academy/api/clues?value=${(this.innerHTML.slice(1))*2}&category=${classStr.slice(1)}`)
-            .then(res=>res.json())
+            .then(res=>{
+                this.innerHTML= ""
+                res.json()
+            })
             .then(res=>{
                 answer= res['clues'][0]['answer']
                 appendClue(res['clues'][0])
             })
     }
+    else [
+        fetch(`https://jservice.kenzie.academy/api/clues?value=${this.innerHTML.slice(1)}&category=${classStr.slice(1)}`)
+        .then(res=>{
+            this.innerHTML = ""
+            return res.json()
+        })
+        .then(res=>{
+            answer = res['clues'][0]['answer']
+            appendClue(res['clues'][0])
+        })// fetch clues then append clue to present
+    ]
 }
 
 function validateAnswer(event){
@@ -89,5 +94,24 @@ function resetAppendClue(){
     document.querySelector('.cluePresentation').remove()
 }
 
-let submitButton = document.getElementById("submitAnswer")
-submitButton.addEventListener("click", validateAnswer)
+function createForm(){
+    // <form>
+    //     <label for="answer"></label>
+    //     <input type="text" id="answer" placeholder="Your Answer Here">
+    //     <button id="submitAnswer">Submit</button>
+    // </form>
+    let form = document.createElement('form')
+    let label = document.createElement('label')
+    label.for = 'answer'
+    let input = document.createElement('input')
+    input.type = 'text'
+    input.id = 'answer'
+    input.placeholder = 'Your Answer Here'
+    let button = document.createElement('button')
+    button.id = 'submitAnswer'
+    button.innerHTML = 'Submit'
+    form.append(label)
+    form.append(input)
+    form.append(button)
+    return form
+}

@@ -27,7 +27,7 @@ function appendCategory(obj){
 const categoryPromise = function(){
     return new Promise(function resolve(){
         for (let i = 0; i < 6; i++){    
-            fetch(`https://jservice.kenzie.academy/api/categories/${randomizeCategory()}`) // obtain random category
+            fetch(`https://jservice.kenzie.academy/api/categories/${randomizeCategory()}?canon=true`) // obtain random category
                 .then(res => res.json())
                 .then(res => appendCategory(res))
         }
@@ -50,7 +50,7 @@ function generateValues(){
         for (let j = 0; j < board[i].length; j++){
             let userSelect = document.querySelector(`h3.a${board[i][j].slice(1,board[i][j].length)}.a${categoryID[j]}`)
             userSelect.addEventListener('click', presentClue)
-            userSelect.classList.remove(`a${board[i][j].slice(1,board[i][j].length)}`)
+            userSelect.classList.remove(`a${board[i][j].slice(1,board[i][j].length)}`) // remove class to make element identifiable in presentClue function by category only
         }
     }
 }
